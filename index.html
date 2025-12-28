@@ -31,7 +31,7 @@
         }
 
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 20px; background: var(--bg-color); color: var(--text-color); transition: background 0.2s; }
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 800px; margin: 0 auto; width: 100%; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
         
         .btn-theme, .styled-select {
@@ -53,17 +53,16 @@
         .br-btn { flex: 1; text-align: center; padding: 6px; cursor: pointer; border-radius: 4px; font-size: 12px; transition: 0.2s; font-weight: bold; }
         .br-btn.active { background: var(--primary-color); color: white; }
 
-        .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .mode-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .mode-card {
-            background: var(--secondary-bg); border-radius: var(--radius); padding: 16px;
+            background: var(--secondary-bg); border-radius: var(--radius); padding: 20px 10px;
             display: flex; flex-direction: column; align-items: center;
-            cursor: pointer; transition: 0.2s; position: relative; overflow: hidden;
+            cursor: pointer; transition: 0.2s; position: relative; overflow: hidden; text-align: center;
         }
         .mode-card.secondary-mode { background: var(--secondary-mode-bg); }
-        .mode-card .material-icons { font-size: 32px; margin-bottom: 4px; color: var(--primary-color); }
-        .mode-label { font-weight: 700; font-size: 15px; }
+        .mode-card .material-icons { font-size: 36px; margin-bottom: 8px; color: var(--primary-color); }
+        .mode-label { font-weight: 700; font-size: 13px; line-height: 1.2; height: 32px; display: flex; align-items: center; justify-content: center; }
 
-        /* 補回 Hover/Focus 複製遮罩 */
         .mode-card .copy-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--primary-color); color: white;
@@ -71,8 +70,8 @@
             opacity: 0; transition: 0.2s; gap: 4px;
         }
         .mode-card:hover .copy-overlay, .mode-card:focus .copy-overlay { opacity: 1; }
-        .mode-card .copy-overlay .material-icons { color: white !important; font-size: 24px; }
-        .copy-text { font-size: 12px; font-weight: bold; }
+        .mode-card .copy-overlay .material-icons { color: white !important; font-size: 28px; }
+        .copy-text { font-size: 11px; font-weight: bold; }
 
         .action-btns { display: flex; flex-direction: row; gap: 10px; width: 100%; }
         .btn-full { padding: 12px 8px; border-radius: var(--radius); border: none; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; color: white; white-space: nowrap; }
@@ -86,6 +85,7 @@
         td { padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
         
         .icon-btn { position: relative; background: none; border: none; cursor: pointer; color: var(--jitsi-off); padding: 5px; transition: 0.2s; }
+        .icon-btn .material-icons { font-size: 22px; }
         .icon-btn:hover { color: var(--primary-color); }
         .icon-btn.plurk-icon:hover { color: var(--plurk-color); }
         .icon-btn.all-icon:hover { color: var(--success-green); }
@@ -95,6 +95,8 @@
         
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1e1e1e; color: white; padding: 10px 20px; border-radius: 4px; display: flex; align-items: center; gap: 8px; opacity: 0; visibility: hidden; transition: 0.3s; z-index: 100; font-size: 14px; }
         #toast.show { opacity: 1; visibility: visible; }
+
+        footer { margin-top: 10px; padding: 20px 0; text-align: center; font-size: 12px; color: var(--jitsi-off); border-top: 1px solid var(--border-color); }
     </style>
 </head>
 <body data-theme="light">
@@ -109,13 +111,14 @@
             </button>
             <select onchange="changeLang(this.value)" id="lang-select" class="styled-select">
                 <option value="zh">繁體中文</option>
+                <option value="ja">日本語</option>
                 <option value="en">English</option>
             </select>
         </div>
     </div>
 
     <div class="card">
-        <input type="text" id="roomName" class="room-input" placeholder="輸入房間名稱" value="MusicRoom">
+        <input type="text" id="roomName" class="room-input" placeholder="輸入房間名稱" value="">
         
         <div class="bitrate-section">
             <div class="bitrate-container">
@@ -127,8 +130,16 @@
 
         <div class="mode-grid">
             <div class="mode-card" tabindex="0" onclick="copyMode('stereo')">
-                <span class="material-icons">thumb_up</span>
+                <span class="material-icons">mic_external_on</span>
                 <span class="mode-label" id="ui-m1-t">來了！</span>
+                <div class="copy-overlay">
+                    <span class="material-icons">content_copy</span>
+                    <span class="copy-text ui-copy-txt">複製</span>
+                </div>
+            </div>
+            <div class="mode-card" tabindex="0" onclick="copyMode('chat')">
+                <span class="material-icons">campaign</span>
+                <span class="mode-label" id="ui-m3-t">尬聊</span>
                 <div class="copy-overlay">
                     <span class="material-icons">content_copy</span>
                     <span class="copy-text ui-copy-txt">複製</span>
@@ -156,7 +167,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card" style="margin-bottom: 12px;">
         <div class="history-header">
             <h3 id="ui-hist-t" style="margin:0; font-size: 16px;">上次什麼時候開的</h3>
         </div>
@@ -165,40 +176,63 @@
                 <tr>
                     <th id="ui-th-n">名稱</th>
                     <th id="ui-th-t">時間</th>
-                    <th style="text-align:right">快速複製</th>
+                    <th style="text-align:right" id="ui-th-q">快速複製</th>
                 </tr>
             </thead>
             <tbody id="historyBody"></tbody>
         </table>
     </div>
+    <footer>
+        &copy; 2025 Made by 8kbps & Gemini. All rights reserved.
+    </footer>
 </div>
 
 <div id="toast"><span class="material-icons">check_circle</span> <span id="toast-msg">已複製</span></div>
 
 <script>
     const i18n = {
-        zh: { m1_t: "來了！", m2_t: "為什麼我聲音只有單邊", plurk_mono: "聲音只有單邊走這邊", copyAll: "複製全部模式網址", plurk: "貼到噗浪", done: "已複製", hist: "上次什麼時候開的", copy: "複製" },
-        en: { m1_t: "Join!", m2_t: "Why is my audio mono?", plurk_mono: "Click here for mono audio fix", copyAll: "Copy All Links", plurk: "Post to Plurk", done: "Copied!", hist: "Last Session", copy: "Copy" }
+        zh: { title: "Jitsi 咒語產生器", m1_t: "來了！", m3_t: "尬聊", m2_t: "聲音只有單邊", plurk_mono: "聲音單邊走這邊", plurk_chat: "只尬聊走這邊", copyAll: "複製全部模式網址", plurk: "貼到噗浪", done: "已複製", hist: "上次什麼時候開的", copy: "複製", th_n: "名稱", th_t: "時間", th_q: "快速複製" },
+        ja: { title: "Jitsi 呪文生成器", m1_t: "よっしゃ！", m3_t: "雑談のみ", m2_t: "片耳音声しか出せない", plurk_mono: "片耳音声しか出せない方はこちら", plurk_chat: "雑談のみの方はこちら", copyAll: "全URLをコピー", plurk: "Plurkに貼る", done: "コピーしました", hist: "前はいつだっけ", copy: "コピー", th_n: "ルーム名", th_t: "時間", th_q: "コピー" },
+        en: { title: "Jitsi Spell Generator", m1_t: "Here I am!", m3_t: "Chat Only", m2_t: "Audio is one side only", plurk_mono: "Mono fix here", plurk_chat: "Chat only here", copyAll: "Copy All Links", plurk: "Post to Plurk", done: "Copied!", hist: "Last Session", copy: "Copy", th_n: "Name", th_t: "Time", th_q: "Quick Copy" }
     };
 
-    let currentLang = 'zh';
+    let currentLang = 'en'; 
     let selectedBitrate = 192000;
+
+    function detectLanguage() {
+        const browserLang = navigator.language || navigator.userLanguage;
+        const shortLang = browserLang.split('-')[0];
+        if (i18n[shortLang]) {
+            currentLang = shortLang;
+        } else if (shortLang === 'zh') {
+            currentLang = 'zh';
+        } else {
+            currentLang = 'en';
+        }
+        document.getElementById('lang-select').value = currentLang;
+    }
 
     function toggleTheme() {
         const body = document.body;
         const isDark = body.getAttribute('data-theme') === 'dark';
         body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        document.getElementById('ui-theme-icon').innerText = isDark ? 'dark_mode' : 'light_mode';
     }
 
     function changeLang(lang) { currentLang = lang; updateLangUI(); renderHistory(); }
 
     function updateLangUI() {
         const t = i18n[currentLang];
+        document.getElementById('ui-title').innerText = t.title;
         document.getElementById('ui-m1-t').innerText = t.m1_t;
         document.getElementById('ui-m2-t').innerText = t.m2_t;
+        document.getElementById('ui-m3-t').innerText = t.m3_t;
         document.getElementById('ui-copy-all').innerText = t.copyAll;
         document.getElementById('ui-plurk').innerText = t.plurk;
         document.getElementById('ui-hist-t').innerText = t.hist;
+        document.getElementById('ui-th-n').innerText = t.th_n;
+        document.getElementById('ui-th-t').innerText = t.th_t;
+        document.getElementById('ui-th-q').innerText = t.th_q;
         document.querySelectorAll('.ui-copy-txt').forEach(el => el.innerText = t.copy);
     }
 
@@ -208,36 +242,38 @@
         el.classList.add('active');
     }
 
-    function generateUrl(name, isStereo) {
-        const config = [`config.disableAP=true`, `config.disableAEC=true`, `config.disableNS=true`, `config.disableAGC=true`, `config.stereo=${isStereo}`, `config.opusMaxAverageBitrate=${selectedBitrate}`, `config.startWithAudioMuted=true`, `config.startWithVideoMuted=true`].join('&');
+    function generateUrl(name, mode) {
+        let isStereo = mode === 'stereo' || mode === 'chat';
+        let disableAP = mode !== 'chat'; 
+        const config = [`config.disableAP=${disableAP}`, `config.disableAEC=${disableAP}`, `config.disableNS=${disableAP}`, `config.disableAGC=${disableAP}`, `config.stereo=${isStereo}`, `config.opusMaxAverageBitrate=${selectedBitrate}`, `config.startWithAudioMuted=true`, `config.startWithVideoMuted=true`].join('&');
         return `https://meet.jit.si/${encodeURIComponent(name)}#${config}`;
     }
 
     function copyMode(mode) {
-        const name = document.getElementById('roomName').value.trim() || "MusicRoom";
-        navigator.clipboard.writeText(generateUrl(name, mode === 'stereo'));
+        const name = document.getElementById('roomName').value.trim() || "Jitsi-MusicRoom";
+        navigator.clipboard.writeText(generateUrl(name, mode));
         saveHistory(name); showToast();
     }
 
     function copyAll(name) {
         const t = i18n[currentLang];
-        const text = `${t.m1_t}：${generateUrl(name, true)}\n${t.m2_t}：${generateUrl(name, false)}`;
+        const text = `${t.m1_t}：${generateUrl(name, 'stereo')}\n${t.m3_t}：${generateUrl(name, 'chat')}\n${t.m2_t}：${generateUrl(name, 'mono')}`;
         navigator.clipboard.writeText(text); showToast();
     }
 
     function copyPlurk(name) {
         const t = i18n[currentLang];
-        const text = `${generateUrl(name, true)}\n(${name})\n${generateUrl(name, false)}\n(${t.plurk_mono})`;
+        const text = `${generateUrl(name, 'stereo')}\n(${name})\n${generateUrl(name, 'chat')}\n(${t.plurk_chat})\n${generateUrl(name, 'mono')}\n(${t.plurk_mono})`;
         navigator.clipboard.writeText(text); showToast();
     }
 
     function copyAllModes() {
-        const name = document.getElementById('roomName').value.trim() || "MusicRoom";
+        const name = document.getElementById('roomName').value.trim() || "Jitsi-MusicRoom";
         copyAll(name); saveHistory(name);
     }
 
     function copyPlurkFormat() {
-        const name = document.getElementById('roomName').value.trim() || "MusicRoom";
+        const name = document.getElementById('roomName').value.trim() || "Jitsi-MusicRoom";
         copyPlurk(name); saveHistory(name);
     }
 
@@ -258,8 +294,9 @@
                 <td><strong style="cursor:pointer; color:var(--primary-color)" onclick="document.getElementById('roomName').value='${h.name}'">${h.name}</strong></td>
                 <td style="color:var(--jitsi-off); font-size:12px">${h.time}</td>
                 <td style="text-align:right">
-                    <button class="icon-btn" onclick="navigator.clipboard.writeText(generateUrl('${h.name}', true)); showToast();"><span class="material-icons">thumb_up</span><div class="tooltip">${t.m1_t}</div></button>
-                    <button class="icon-btn" onclick="navigator.clipboard.writeText(generateUrl('${h.name}', false)); showToast();"><span class="material-icons">settings_accessibility</span><div class="tooltip">${t.m2_t}</div></button>
+                    <button class="icon-btn" onclick="navigator.clipboard.writeText(generateUrl('${h.name}', 'stereo')); showToast();"><span class="material-icons">mic_external_on</span><div class="tooltip">${t.m1_t}</div></button>
+                    <button class="icon-btn" onclick="navigator.clipboard.writeText(generateUrl('${h.name}', 'chat')); showToast();"><span class="material-icons">campaign</span><div class="tooltip">${t.m3_t}</div></button>
+                    <button class="icon-btn" onclick="navigator.clipboard.writeText(generateUrl('${h.name}', 'mono')); showToast();"><span class="material-icons">settings_accessibility</span><div class="tooltip">${t.m2_t}</div></button>
                     <button class="icon-btn all-icon" onclick="copyAll('${h.name}')"><span class="material-icons">assignment</span><div class="tooltip">${t.copyAll}</div></button>
                     <button class="icon-btn plurk-icon" onclick="copyPlurk('${h.name}')"><span class="material-icons">share</span><div class="tooltip">${t.plurk}</div></button>
                 </td>
@@ -274,7 +311,7 @@
         setTimeout(() => t.classList.remove('show'), 2000);
     }
 
-    window.onload = () => { updateLangUI(); renderHistory(); };
+    window.onload = () => { detectLanguage(); updateLangUI(); renderHistory(); };
 </script>
 
 </body>
